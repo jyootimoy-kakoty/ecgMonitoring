@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang='en' dir='ltr'>
+
+    <head>
+        <meta charset='utf-8'>
+        <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+        <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+        <meta http-equiv='refresh' content='30000, ./index.html'>
+        <!--link rel='stylesheet' href='style.css' type='text/css'/-->
+    </head>
+
+    <title>ECGMoSys</title>
+
+    <body>
+        <!--script src='Intro.js' type='text/javascript' ></script-->
+        {% if hospitals %}
+            <ul>
+                {% for hospital in hospitals %}
+                    <li><a href ="/Monitor/{{ hospital.hospitalID }}/">{{ hospital.hospitalName }}</a></li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <h3>No Hospital has been listed yet.</h3>
+        {% endif %}
+    </body>
+</html>
