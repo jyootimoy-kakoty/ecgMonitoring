@@ -7,4 +7,5 @@ class HospitalData(models.Model):
     hospitalName = models.TextField(max_length=30)
     hospitalAddress =  models.TextField(max_length=50)
 
- 
+    def __str__(self):
+        return self.hospitalID + ' ' + self.hospitalName + ' ' + self.hospitalAddress
