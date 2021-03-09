@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from .models import HospitalData
 
 # Create your views here.
 def Index(request):
