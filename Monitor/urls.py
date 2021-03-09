@@ -19,4 +19,5 @@ from . import views
 
 urlpatterns = [
     url(r'^$', views.Index, name='Index'),
+    url(r'^hospitalDataEntry$', views.hospitalDataEntry, name='hospitalDataEntry'),
 ]
