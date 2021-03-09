@@ -1,7 +1,7 @@
 from django.shortcuts import render
 
 # Create your views here.
-def index(request):
+def Index(request):
     hospitals = HospitalData.objects.all()
     """
     Index = '<h1>Welcome to ECG-Monitoring System</h1>'
@@ -14,8 +14,8 @@ def index(request):
         'hospitals': hospitals,
     }
     """
-    template = loader.get_template('monitor/index.html')
+    template = loader.get_template('Monitor/index.html')
     return HttpResponse(template.render(context, request))
     """
-    return render(request, 'monitor/index.html', context)
+    return render(request, 'Monitor/Index.html', context)
 
