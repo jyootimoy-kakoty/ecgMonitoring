@@ -2,6 +2,11 @@ from django.shortcuts import render
 from .models import HospitalData, PatientData, SensorData, ECGData
 from django.http import HttpResponse
 
+#Global Variables
+sampleRate = 250
+samples = 15
+total = samples * sampleRate
+
 # Create your views here.
 #Index is the Home Page View
 def Index(request):
@@ -57,7 +62,21 @@ def ecgDataEntry(request):
     j = 0
     for patient in patients:
         if j < patients.count():
-            for i in range(0, 5, 1):
+            for i in range(0, sampleRate, 1):
                 ecgInstance = ECGData.objects.create(sensorID=sensors[j], patientID = patient, time = datetime.datetime.now(IST).strftime("%Y-%m-%d %H:%M:%S.%f"), data = random.uniform(0, 1023))
         j += 1
     return HttpResponse("<h1>ECG Data inserted successfully!</h1>")
+
+#Detail Views: Expand Index and respective following pages one by one in hierarchy
+def hospitalDetails(request, hID):
+    hospital = HospitalData.objects.filter(hospitalID = hID)[0]
+    patients = PatientData.objects.all()
+    Index = '<h1>Hospital Details: <a href ="/Monitor/">Home</a></h1>\
+            <h2> Hospital ID: ' + hospital.hospitalID + ' | Hospital Name: ' + hospital.hospitalName + ' | Address: ' + hospital.hospitalAddress + '</h2> <br><h1>Patient Database</h1>'
+    for patient in patients:
+        if patient.hospitalID.hospitalID == hID:
+            url = '/Monitor/' + str(patient.patientID) + '/'
+            Index += '<a href =" ' + url + '">' + patient.patientName + '</a><br>'
+    return HttpResponse(Index)
+    #pattern = PatientData.objects.filter(patientName__startswith = 'Anku')[0];
+    #return HttpResponse("<h2>"" + str(hospital.hospitalID) + " " + str(hospital.hospitalName) + " " + str(hospital.hospitalAddress) + "</h2>")

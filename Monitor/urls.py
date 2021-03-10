@@ -18,9 +18,13 @@ from django.conf.urls import url
 from . import views
 
 urlpatterns = [
+    #Index
     url(r'^$', views.Index, name='Index'),
+    #Data Entry
     url(r'^hospitalDataEntry$', views.hospitalDataEntry, name='hospitalDataEntry'),
     url(r'^patientDataEntry$', views.patientDataEntry, name='patientDataEntry'),
     url(r'^sensorDataEntry$', views.sensorDataEntry, name='sensorDataEntry'),
     url(r'^ecgDataEntry$', views.ecgDataEntry, name='ecgDataEntry'),
+    #Details
+    url(r'^(?P<hID>H[A-Z]+[0-9]+)/$', views.hospitalDetails , name='hospitalDetails'),
 ]
