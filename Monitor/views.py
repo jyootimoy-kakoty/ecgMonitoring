@@ -71,6 +71,8 @@ def ecgDataEntry(request):
 def hospitalDetails(request, hID):
     hospital = HospitalData.objects.filter(hospitalID = hID)[0]
     patients = PatientData.objects.all()
+    """
+    #Method 1
     Index = '<h1>Hospital Details: <a href ="/Monitor/">Home</a></h1>\
             <h2> Hospital ID: ' + hospital.hospitalID + ' | Hospital Name: ' + hospital.hospitalName + ' | Address: ' + hospital.hospitalAddress + '</h2> <br><h1>Patient Database</h1>'
     for patient in patients:
@@ -78,5 +80,13 @@ def hospitalDetails(request, hID):
             url = '/Monitor/' + str(patient.patientID) + '/'
             Index += '<a href =" ' + url + '">' + patient.patientName + '</a><br>'
     return HttpResponse(Index)
+    """
+    #Method 2
+    context = {
+        'hospital': hospital,
+        'patients': patients,
+        'hID': hID
+    }
+    return render(request, 'Monitor/hospitalDetails.html', context)
     #pattern = PatientData.objects.filter(patientName__startswith = 'Anku')[0];
     #return HttpResponse("<h2>"" + str(hospital.hospitalID) + " " + str(hospital.hospitalName) + " " + str(hospital.hospitalAddress) + "</h2>")
