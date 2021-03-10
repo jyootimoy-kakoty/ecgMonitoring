@@ -93,12 +93,18 @@ def hospitalDetails(request, hID):
 
 def patientDetails(request, pID):
     patient = PatientData.objects.filter(patientID = pID)[0]
-    #"""
+    """
     #Method 1
     Index = '<h1>Patient Details: <a href ="/Monitor/">Home</a></h1>\
             <h2>Patient ID: ' + patient.patientID + ' | Patient Name: ' + patient.patientName + ' | Hospital ID: ' + patient.hospitalID.hospitalID + '</h2>\
             <br><h1>ECG Data</h1>'
     return HttpResponse(Index)
-    #"""
-
+    """
+    #Method 2
+    context = {
+        'patient': patient,
+        'pID': pID
+    }
+    return render(request, 'Monitor/patientDetails.html', context)
+    #return ecgDetails(request, pID, patient)
     
