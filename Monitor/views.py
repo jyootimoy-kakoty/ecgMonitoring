@@ -90,3 +90,15 @@ def hospitalDetails(request, hID):
     return render(request, 'Monitor/hospitalDetails.html', context)
     #pattern = PatientData.objects.filter(patientName__startswith = 'Anku')[0];
     #return HttpResponse("<h2>"" + str(hospital.hospitalID) + " " + str(hospital.hospitalName) + " " + str(hospital.hospitalAddress) + "</h2>")
+
+def patientDetails(request, pID):
+    patient = PatientData.objects.filter(patientID = pID)[0]
+    #"""
+    #Method 1
+    Index = '<h1>Patient Details: <a href ="/Monitor/">Home</a></h1>\
+            <h2>Patient ID: ' + patient.patientID + ' | Patient Name: ' + patient.patientName + ' | Hospital ID: ' + patient.hospitalID.hospitalID + '</h2>\
+            <br><h1>ECG Data</h1>'
+    return HttpResponse(Index)
+    #"""
+
+    

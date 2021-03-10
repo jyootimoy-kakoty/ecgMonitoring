@@ -27,4 +27,5 @@ urlpatterns = [
     url(r'^ecgDataEntry$', views.ecgDataEntry, name='ecgDataEntry'),
     #Details
     url(r'^(?P<hID>H[A-Z]+[0-9]+)/$', views.hospitalDetails , name='hospitalDetails'),
+    url(r'^(?P<pID>P[A-Z]+[0-9]+)/$', views.patientDetails , name='patientDetails'),
 ]
