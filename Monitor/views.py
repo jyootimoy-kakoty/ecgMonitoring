@@ -121,11 +121,12 @@ def ecgDetails(request, pID, patient):
         if ecgFiltered.count() < sampleRate:
             currentSamples = 1
         json_serializer = serializers.get_serializer("json")()
+        print(currentSamples, ecgFiltered.count())
         ecg = json_serializer.serialize(ecgFiltered.order_by('time')[(currentSamples - 1) * sampleRate : ecgFiltered.count()], ensure_ascii=False)
         #ecg = json_serializer.serialize(ecgDatas.order_by('time')[3500 : 3750], ensure_ascii=False)
         #ecg = json_serializer.serialize(ecgDatas.order_by('-time')[:10], ensure_ascii=False)
         context = {
-            'ECG': ecgFiltered.order_by('-time')[(currentSamples - 1) * sampleRate : ecgFiltered.count()],
+            'ECG': ecgFiltered.order_by('-time')[0 : (currentSamples - 1) * sampleRate],
             #'ecgDatas': ecgDatas[3500 : 3750],
             'ecg': ecg,
             'pID': pID,
