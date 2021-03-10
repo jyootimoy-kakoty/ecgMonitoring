@@ -6,15 +6,15 @@
     {% if ECG %}
     <div id = "tableContainer">
     <table id = "ecgTable">
-        <h1><tr><th>SensorID</th><th>PatientID</th><th>TimeStamp</th><th>ECG Data</th></tr></h1>
+        <h1><tr><th>Sample No</th><th>SensorID</th><th>PatientID</th><th>TimeStamp</th><th>ECG Data</th></tr></h1>        
         {% for ecgData in ECG %}
-            {{ecgDatas}}
             {% if ecgData.patientID.patientID == pID %}
-            <tr>{{ ecgg.sensorID.sensorID }}
+            <tr>
+                <td>{{ forloop.revcounter }} </td><!--{{ forloop.counter0 }} # starting index 0-->
                 <td>{{ ecgData.sensorID.sensorID }} </td>
                 <td>{{ ecgData.patientID.patientID }}</td>
                 <td>{{ ecgData.time }}</td>
-                <td>{{ ecgData.data }}</td>
+                <td>{{ ecgData.data }}</td>{{forloop.length}}
             </tr>
             {% endif %}
         {% endfor %}

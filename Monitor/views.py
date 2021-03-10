@@ -118,7 +118,7 @@ def ecgDetails(request, pID, patient):
         from math import floor
         ecgFiltered = ecgDatas.filter(patientID = patient)
         currentSamples = floor(ecgFiltered.count() / sampleRate)
-        if currentSamples < sampleRate:
+        if ecgFiltered.count() < sampleRate:
             currentSamples = 1
         json_serializer = serializers.get_serializer("json")()
         ecg = json_serializer.serialize(ecgFiltered.order_by('time')[(currentSamples - 1) * sampleRate : ecgFiltered.count()], ensure_ascii=False)
