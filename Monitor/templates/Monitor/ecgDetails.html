@@ -1,0 +1,40 @@
+{% extends 'Monitor/patientDetails.html' %}
+
+{% block body %}
+    <!--script src='Intro.js' type='text/javascript' ></script-->
+
+    {% if ECG %}
+    <div id = "tableContainer">
+    <table id = "ecgTable">
+        <h1><tr><th>SensorID</th><th>PatientID</th><th>TimeStamp</th><th>ECG Data</th></tr></h1>
+        {% for ecgData in ECG %}
+            {{ecgDatas}}
+            {% if ecgData.patientID.patientID == pID %}
+            <tr>{{ ecgg.sensorID.sensorID }}
+                <td>{{ ecgData.sensorID.sensorID }} </td>
+                <td>{{ ecgData.patientID.patientID }}</td>
+                <td>{{ ecgData.time }}</td>
+                <td>{{ ecgData.data }}</td>
+            </tr>
+            {% endif %}
+        {% endfor %}
+    </table>
+    </div>
+
+    {% else %}
+    <h3>No data available.</h3>
+    {% endif %}
+
+    {% if patients %}
+        <ul>
+            {% for patient in patients %}
+                {% if patient.hospitalID.hospitalID == hID %}
+                    <li><a href ="/Monitor/{{ patient.patientID }}/">{{ patient.patientName }}</a></li>
+                {% endif %}
+            {% endfor %}
+        </ul>
+    {% else %}
+        <h3>No Patient's ECG Details available now.</h3>
+    {% endif %}
+
+{% endblock %}
