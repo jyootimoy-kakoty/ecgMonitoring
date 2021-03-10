@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from .models import HospitalData, PatientData, SensorData, ECGData
-from django.http import HttpResponse
+from django.http import HttpResponse, Http404
 
 #Global Variables
 sampleRate = 250
@@ -105,6 +105,36 @@ def patientDetails(request, pID):
         'patient': patient,
         'pID': pID
     }
-    return render(request, 'Monitor/patientDetails.html', context)
-    #return ecgDetails(request, pID, patient)
-    
+    render(request, 'Monitor/patientDetails.html', context)
+    return ecgDetails(request, pID, patient)
+
+def ecgDetails(request, pID, patient):
+    ecgDatas = ECGData.objects.all()#.order_by('-time')[:10]
+    patients = PatientData.objects.all()
+    if not ecgDatas:
+        raise Http404("Aw! It's an error.")
+    else:
+        from django.core import serializers
+        from math import floor
+        ecgFiltered = ecgDatas.filter(patientID = patient)
+        currentSamples = floor(ecgFiltered.count() / sampleRate)
+        if currentSamples < sampleRate:
+            currentSamples = 1
+        json_serializer = serializers.get_serializer("json")()
+        ecg = json_serializer.serialize(ecgFiltered.order_by('time')[(currentSamples - 1) * sampleRate : ecgFiltered.count()], ensure_ascii=False)
+        #ecg = json_serializer.serialize(ecgDatas.order_by('time')[3500 : 3750], ensure_ascii=False)
+        #ecg = json_serializer.serialize(ecgDatas.order_by('-time')[:10], ensure_ascii=False)
+        context = {
+            'ECG': ecgFiltered.order_by('-time')[(currentSamples - 1) * sampleRate : ecgFiltered.count()],
+            #'ecgDatas': ecgDatas[3500 : 3750],
+            'ecg': ecg,
+            'pID': pID,
+            'patient': patient,
+            'patients': patients,
+            'sampleRate': sampleRate,
+            'samples': samples,
+            'currentSamples': currentSamples
+        }
+
+        return render(request, 'Monitor/ecgDetails.html', context)
+ 
