@@ -1,0 +1,17 @@
+<div id = "tableContainer">
+<table id = "ecgTable">
+    <h1><tr><th>Sample No</th><th>SensorID</th><th>PatientID</th><th>TimeStamp</th><th>ECG Data</th></tr></h1>        
+    {% for ecgData in ECG %}
+        {% if ecgData.patientID.patientID == pID %}
+        <tr>
+            <td>{{ forloop.revcounter }} </td><!--{{ forloop.counter0 }} # starting index 0-->
+            <td>{{ ecgData.sensorID.sensorID }} </td>
+            <td>{{ ecgData.patientID.patientID }}</td>
+            <!--td>{{ ecgData.time|date:'D Y-m-d h:i:s:u A T' }}</td-->
+            <td>{{ ecgData.time|date:'D dS M Y h:i:s:u A T' }}</td>
+            <td>{{ ecgData.data }}</td>
+        </tr>
+        {% endif %}
+    {% endfor %}
+</table>
+</div>
