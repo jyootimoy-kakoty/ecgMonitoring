@@ -18,7 +18,7 @@ data = {
 #{'sensorID':'HTZ12S001', 'patientID':'PTZ202102270001', 'time': datetime.datetime.now(IST).strftime("%Y-%m-%d %H:%M:%S.%f"), 'data': '633.9791791021592'}
 def myconverter(o):
     if isinstance(o, datetime.datetime):
-        print(datetime.datetime)
+        #print(datetime.datetime)
         return o.__str__()#{}-{}-{}".format(o.year, o.month, o.day)
 
 for i in range(0, sampleRate, 1):

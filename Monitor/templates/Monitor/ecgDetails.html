@@ -6,7 +6,7 @@
     <iframe src = "/Monitor/{{pID}}/conciseTable" id = "tableFrame" style = "height: 300px; width: 100%">
 
     </iframe>
-    <div id = "tableContainer">
+    <div id = "tableContainer" style = "height: 300px; width: 100%">
     <table id = "ecgTable">
         <h3><tr><th>Sample No</th><th>SensorID</th><th>PatientID</th><th>TimeStamp</th><th>ECG Data</th></tr></h3> 
         {% for ecgData in ECG %}
@@ -31,14 +31,10 @@
         window.onload = function refreshTable() {
             setInterval(function () {
                 console.log('hi');
+                document.getElementById('tableContainer').innerHTML = '<object type="text/html" data="/Monitor/{{pID}}/conciseTable" style = "height: 300px; width: 100%"></object>'
                 var iframe = document.getElementById('tableFrame')//.contentDocument.location.reload(true);
                 iframe.src = iframe.src;
-                ecgTable = document.getElementById('ecgTable');
-                //console.log(`{{ECG}}`);
-                ecgTable.innerHTML = '';
-                //conciseTable = insertAdjacentHTML('beforeend', '<h3 id = "dataRow">No data available.</h3>')
-                header = `<h3><tr><th>Sample No</th><th>SensorID</th><th>PatientID</th><th>TimeStamp</th><th>ECG Data</th></tr></h3>`
-                ecgTable.insertAdjacentHTML('beforeend', header)
+
                 /*for (ecgData in ECG){
                     console.log('hi-');
                     `{% if ecgData.patientID.patientID == pID %}`
@@ -53,9 +49,43 @@
                     </tr>`
                     ecgTable.insertAdjacentHTML('beforeend', row);
                 `{% endif %}`
+                }*/
+                /*ecgTable = document.getElementById('ecgTable');
+                ecgTable.innerHTML = '';
+                header = `<h3><tr><th>Sample No</th><th>SensorID</th><th>PatientID</th><th>TimeStamp</th><th>ECG Data</th></tr></h3>`
+                ecgTable.insertAdjacentHTML('beforeend', header)
+
+                ecgg = "{{ ECG | escapejs }}"
+                pIDD = "{{ pID | escapejs }}"
+                console.log(ecgg);
+                ecggParsed = JSON.parse(ecgg)
+                
+                if (!ecggParsed) {
+                    ecgTable.insertAdjacentHTML('beforeend', '<h3 id = "dataRow">No data available.</h3>')
                 }
-                //document.getElementById('tableContainer').insertAdjacentHTML('beforeend', conciseTable)*/
-            }, 1500);
+                else {
+                    patientParsed = '{{ ecgData.patientID.patientID }}'
+                    length = ecggParsed.length
+                    for (i = 0; i < ecggParsed.length; i++) {
+                        //console.log(i)//datetime.now(IST).strftime("%Y-%m-%d %H:%M:%S.%f")
+                        if (ecggParsed[i].fields.patientID == pIDD) {
+                            //console.log(i)
+                            timeParsed = ecggParsed[i].fields.time.replace('Z', '').replace('T', ' ')
+                            const row = `
+                                <tr id = "dataRow">
+                                    <td>${length} </td>
+                                    <td>${ecggParsed[i].fields.sensorID} </td>
+                                    <td>${ecggParsed[i].fields.patientID}</td>
+                                    <td>${timeParsed}</td>
+                                    <td>${ecggParsed[i].fields.data}</td>
+                                </tr>
+                            `;
+                            ecgTable.insertAdjacentHTML('beforeend', row);
+                            length -= 1
+                        }
+                    }
+                }*/
+            }, 1100);
         }
     </script>
 
