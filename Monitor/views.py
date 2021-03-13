@@ -1,10 +1,11 @@
 from django.shortcuts import render
 from .models import HospitalData, PatientData, SensorData, ECGData
-from django.http import HttpResponse, Http404
+from django.http import HttpResponse, Http404, StreamingHttpResponse
+import json
 
 #Global Variables
 sampleRate = 250
-samples = 15
+samples = 4
 total = samples * sampleRate
 
 # Create your views here.
@@ -139,3 +140,73 @@ def ecgDetails(request, pID, patient):
 
         return render(request, 'Monitor/ecgDetails.html', context)
  
+def conciseTable(request, pID):
+    ecgDatas = ECGData.objects.all()#.order_by('-time')[:10]
+    patients = PatientData.objects.all()
+    patient = PatientData.objects.filter(patientID = pID)[0]
+    if not ecgDatas:
+        raise Http404("Aw! It's an error.")
+    else:
+        from django.core import serializers
+        from math import floor
+        ecgFiltered = ecgDatas.filter(patientID = patient)
+        currentSamples = floor(ecgFiltered.count() / sampleRate)
+        if ecgFiltered.count() < sampleRate:
+            currentSamples = 1
+        json_serializer = serializers.get_serializer("json")()
+        print(currentSamples, ecgFiltered.count())
+        ecg = json_serializer.serialize(ecgFiltered.order_by('time')[(currentSamples - 1) * sampleRate : ecgFiltered.count()], ensure_ascii=False)
+        #ecg = json_serializer.serialize(ecgDatas.order_by('time')[3500 : 3750], ensure_ascii=False)
+        #ecg = json_serializer.serialize(ecgDatas.order_by('-time')[:10], ensure_ascii=False)
+        context = {
+            'ECG': ecgFiltered.order_by('-time')[0 : (currentSamples - 1) * sampleRate],
+            #'ecgDatas': ecgDatas[3500 : 3750],
+            'ecg': ecg,
+            'pID': pID,
+            'patient': patient,
+            'patients': patients,
+            'sampleRate': sampleRate,
+            'samples': samples,
+            'currentSamples': currentSamples
+        }
+
+        return render(request, 'Monitor/conciseTable.html', context)
+
+#Data Entry and Delete by POST Request Handling
+def deleteOldData():
+    count = ECGData.objects.count()
+    print(count)
+    if count not in range (0, total):
+        #toDelete = ECGData.objects.all()[0 : sampleRate]
+        #toDelete.delete()
+        ECGData.objects.filter(id__in=list(ECGData.objects.values_list('pk', flat=True)[:sampleRate])).delete()
+        count = ECGData.objects.count()
+        print(count)
+        deleteOldData()
+    print(ECGData.objects.count())
+    return
+
+def RPIPush(request):
+    #return StreamingHttpResponse('RPI POST Request Successful!')
+    if request.method=='POST':
+            deleteOldData()
+            patients = PatientData.objects.all()
+            sensors = SensorData.objects.all()
+            #received_json_data=json.loads(request.POST['data'])
+            received = json.loads(request.body)
+            #print(received['ECGData'][0]['sensorID'], received['ECGData'][1])
+            for i in sensors:
+                if i.sensorID == received['ECGData'][0]['sensorID']:
+                    sensor = i
+            for i in patients:
+                if i.patientID == received['ECGData'][0]['patientID']:
+                    patient = i
+            j = 0
+            for row in received['ECGData']:
+                print(received['ECGData'][j])
+                ECGData.objects.create(sensorID = sensor, patientID = patient, time = row['time'], data = row['data'])
+                j += 1
+            
+            j = 0
+            return StreamingHttpResponse('RPI POST Request Successful!: ' + str(received))
+    return StreamingHttpResponse('Error: GET Request')

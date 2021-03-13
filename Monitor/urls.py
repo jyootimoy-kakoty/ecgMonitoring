@@ -28,4 +28,7 @@ urlpatterns = [
     #Details
     url(r'^(?P<hID>H[A-Z]+[0-9]+)/$', views.hospitalDetails , name='hospitalDetails'),
     url(r'^(?P<pID>P[A-Z]+[0-9]+)/$', views.patientDetails , name='patientDetails'),
+    url(r'^(?P<pID>P[A-Z]+[0-9]+)/conciseTable/$', views.conciseTable , name='conciseTable'),
+    #POST Request for Data Entry
+    url(r'^RPIPush$', views.RPIPush , name='RPIPush'),
 ]

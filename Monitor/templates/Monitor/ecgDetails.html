@@ -2,11 +2,13 @@
 
 {% block body %}
     <!--script src='Intro.js' type='text/javascript' ></script-->
-
     {% if ECG %}
+    <iframe src = "/Monitor/{{pID}}/conciseTable" id = "tableFrame" style = "height: 300px; width: 100%">
+
+    </iframe>
     <div id = "tableContainer">
     <table id = "ecgTable">
-        <h1><tr><th>Sample No</th><th>SensorID</th><th>PatientID</th><th>TimeStamp</th><th>ECG Data</th></tr></h1>        
+        <h3><tr><th>Sample No</th><th>SensorID</th><th>PatientID</th><th>TimeStamp</th><th>ECG Data</th></tr></h3> 
         {% for ecgData in ECG %}
             {% if ecgData.patientID.patientID == pID %}
             <tr>
@@ -14,7 +16,7 @@
                 <td>{{ ecgData.sensorID.sensorID }} </td>
                 <td>{{ ecgData.patientID.patientID }}</td>
                 <td>{{ ecgData.time }}</td>
-                <td>{{ ecgData.data }}</td>{{forloop.length}}
+                <td>{{ ecgData.data }}</td>
             </tr>
             {% endif %}
         {% endfor %}
@@ -22,19 +24,39 @@
     </div>
 
     {% else %}
-    <h3>No data available.</h3>
+        <h3>No data available.</h3>
     {% endif %}
 
-    {% if patients %}
-        <ul>
-            {% for patient in patients %}
-                {% if patient.hospitalID.hospitalID == hID %}
-                    <li><a href ="/Monitor/{{ patient.patientID }}/">{{ patient.patientName }}</a></li>
-                {% endif %}
-            {% endfor %}
-        </ul>
-    {% else %}
-        <h3>No Patient's ECG Details available now.</h3>
-    {% endif %}
+    <script>
+        window.onload = function refreshTable() {
+            setInterval(function () {
+                console.log('hi');
+                var iframe = document.getElementById('tableFrame')//.contentDocument.location.reload(true);
+                iframe.src = iframe.src;
+                ecgTable = document.getElementById('ecgTable');
+                //console.log(`{{ECG}}`);
+                ecgTable.innerHTML = '';
+                //conciseTable = insertAdjacentHTML('beforeend', '<h3 id = "dataRow">No data available.</h3>')
+                header = `<h3><tr><th>Sample No</th><th>SensorID</th><th>PatientID</th><th>TimeStamp</th><th>ECG Data</th></tr></h3>`
+                ecgTable.insertAdjacentHTML('beforeend', header)
+                /*for (ecgData in ECG){
+                    console.log('hi-');
+                    `{% if ecgData.patientID.patientID == pID %}`
+                    console.log('hi--');
+                    row = `
+                    <tr>
+                        <td>{{ forloop.revcounter }} </td><!--{{ forloop.counter0 }} # starting index 0-->
+                        <td>{{ ecgData.sensorID.sensorID }} </td>
+                        <td>{{ ecgData.patientID.patientID }}</td>
+                        <td>{{ ecgData.time }}</td>
+                        <td>{{ ecgData.data }}</td> 
+                    </tr>`
+                    ecgTable.insertAdjacentHTML('beforeend', row);
+                `{% endif %}`
+                }
+                //document.getElementById('tableContainer').insertAdjacentHTML('beforeend', conciseTable)*/
+            }, 1500);
+        }
+    </script>
 
 {% endblock %}
