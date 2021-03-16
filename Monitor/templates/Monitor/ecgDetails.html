@@ -41,17 +41,36 @@
                 var chart = new CanvasJS.Chart("chartContainer", {
                     animationEnabled: true,
                     zoomEnabled: true,
-                    theme: "light2",
+                    theme: "dark2",//"light2",
                     title:{
                         text: "ECG Line Chart"
                     },
-                    axisX:{      
+                    axisX:{   
+                        title: "Sample No",
+                        valueFormatString: "####",
+                        interval: 10,
+                        titleFontColor: "#51CDA0",
+                        titleFontSize: 22,
+                        labelFontSize: 16,
                         //valueFormatString: "YYYY-MM-DD HH:MM:SS" ,
-                    //labelAngle: -50
+                        //labelAngle: -50
+                    },
+                    axisY:{
+                        title: "ECG Level",
+                        interval: 250,
+                        indexLabelFontSize: 24,
+                        labelFontSize: 16,
+                        titleFontColor: "#6D78ED",
+                        titleFontSize: 22,
+                        lineColor: "#6D78ED",//"#51CDA0",
+                        //gridThickness: 0,
+                        lineThickness: 2,
+                        //labelFormatter: addSymbols
                     },
                     data: [{        
-                        type: "line",
-                        indexLabelFontSize: 16,
+                        type: "spline",//"line",
+                        indexLabelFontSize: 24,
+                        color: "#51CDA0",
                         //{ y: 414},
                         // y: 520, indexLabel: "\u2191 highest",markerColor: "red", markerType: "triangle" },
                         //{ y: 410 , indexLabel: "\u2193 lowest",markerColor: "DarkSlateGrey", markerType: "cross" },
@@ -80,7 +99,7 @@
             }
             chart.render();
             //Update Chart
-            setInterval(function () {
+            /*setInterval(function () {
                 //console.log('hi');
                 //Chart 2
                 //document.getElementById("chartContainer").innerHTML = '<object type="text/html" data="/Monitor/{{pID}}/chart" style = "height: 300px; width: 100%"></object>'
@@ -95,7 +114,7 @@
                         if (sample[i].patientID == pIDD) {
                             //console.log(i)
                             chart.options.data[0].dataPoints.shift()
-                            sample[i].data += Math.random()*100
+                            //sample[i].data += Math.random()*100
                             chart.options.data[0].dataPoints.push({x: i, y: sample[i].data})
                             //chart.render();
                         }
@@ -133,8 +152,69 @@
                     }
                 }
                 }
-            }, 1000);
+            }, 1000);*/
         }
     </script>
+    <style>
+        /*#tableFrame {
+           width: 100%;
+           height: 300px;
+           overflow-y:scroll;
+       }*/
+       #completeTable {
+           text-align:right;
+       }
+       #tableContainer {
+           width: 100%;
+           height: 500px;
+           overflow-y:scroll;
+       }
+   
+       #ecgTableHeader {
+           font-family: Arial, Helvetica, sans-serif;
+           border-collapse: collapse;
+           width: 100%;
+           text-align: center;
+       }
+   
+       #ecgTable {
+           font-family: Arial, Helvetica, sans-serif;
+           border-collapse: collapse;
+           width: 100%;
+           text-align: center;
+       }
+       
+       #ecgTableHeader td, #ecgTableHeader th {
+           border: 1px solid #ddd;
+           padding: 8px;
+       }
+   
+       #ecgTable td, #ecgTable th {
+           border: 1px solid #ddd;
+           padding: 8px;
+       }
+       
+       #ecgTable tr:nth-child(even){background-color: #f2f2f2;}
+       
+       #ecgTable tr:hover {background-color: #ddd;}
+       
+       #ecgTableHeader th {
+           padding-top: 12px;
+           padding-bottom: 12px;
+           text-align: center;
+           background-color: #4CAF50;
+           color: white;
+       }
+   
+       #ecgTable th {
+           padding-top: 12px;
+           padding-bottom: 12px;
+           text-align: center;
+           background-color: #4CAF50;
+           color: white;
+           position:sticky;
+           top: 0;
+       }
+   </style>
 
 {% endblock %}

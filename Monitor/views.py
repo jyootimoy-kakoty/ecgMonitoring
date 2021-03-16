@@ -235,13 +235,13 @@ def chart(request, pID):
 #Data Entry and Delete by POST Request Handling
 def deleteOldData():
     count = ECGData.objects.count()
-    print(count)
+    #print(count)
     if count not in range (0, total):
         #toDelete = ECGData.objects.all()[0 : sampleRate]
         #toDelete.delete()
         ECGData.objects.filter(id__in=list(ECGData.objects.values_list('pk', flat=True)[:sampleRate])).delete()
         count = ECGData.objects.count()
-        print(count)
+        #print(count)
         deleteOldData()
     print(ECGData.objects.count())
     return
@@ -263,10 +263,10 @@ def RPIPush(request):
                     patient = i
             j = 0
             for row in received['ECGData']:
-                print(received['ECGData'][j])
+                #print(received['ECGData'][j])
                 ECGData.objects.create(sensorID = sensor, patientID = patient, time = row['time'], data = row['data'])
                 j += 1
             
             j = 0
-            return StreamingHttpResponse('RPI POST Request Successful!: ' + str(received))
+            return StreamingHttpResponse('RPI POST Request Successful!: ')# + str(received))
     return StreamingHttpResponse('Error: GET Request')
