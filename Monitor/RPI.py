@@ -8,8 +8,8 @@ from datetime import timedelta
 
 sampleRate =250
 url = "http://192.168.43.133:8000/Monitor/RPIPush"
-#IST = pytz.timezone('Asia/Kolkata')
-time = datetime.datetime.now()#(IST)
+IST = pytz.timezone('Asia/Kolkata')
+time = datetime.datetime.now(IST)
 #print(IST, time, type(time))
 data = {
     'ECGData':
@@ -27,5 +27,6 @@ for i in range(0, sampleRate, 1):
     #print(i, time)
     row = {'sensorID':'HTZ12S001', 'patientID':'PTZ202102270001', 'time': myconverter(time), 'data': random.uniform(0, 1023)}
     data['ECGData'].append(row)
-r = requests.post(url, data = json.dumps(data))
-print (r.text)
+#r = requests.post(url, data = json.dumps(data))
+#print (r.text)
+print(data)

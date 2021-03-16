@@ -1,0 +1,44 @@
+<!--div id = "chartContainer" style = "height: 300px; width: 100%"></div-->
+<script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+<script>
+    var chart = new CanvasJS.Chart("chartContainer", {
+        animationEnabled: true,
+        theme: "light2",
+        title:{
+            text: "ECG Line Chart"
+        },
+        axisX:{      
+            //valueFormatString: "YYYY-MM-DD HH:MM:SS" ,
+        //labelAngle: -50
+    },
+        data: [{        
+            type: "line",
+            indexLabelFontSize: 16,
+            /*
+            { y: 414},
+            { y: 520, indexLabel: "\u2191 highest",markerColor: "red", markerType: "triangle" },
+            { y: 410 , indexLabel: "\u2193 lowest",markerColor: "DarkSlateGrey", markerType: "cross" },
+            */
+            dataPoints: []// { x:10, y: 414},  { x:20, y: 144},  { x:30, y: 204},]
+        }]
+    });
+    ecgg = "{{ ecg | escapejs }}"
+    pIDD = "{{ pID | escapejs }}"
+    samples = "{{samples | escapejs }}"
+    sampleRate = "{{ sampleRate | escapejs }}"
+    //ecg = JSON.parse(document.getElementById('data').textContent);
+    i = 0
+    ecggParsed = JSON.parse(ecgg)
+    patientParsed = '{{ ecgData.patientID.patientID }}'
+
+    for (i = 0; i < ecggParsed.length; i++) {
+        //console.log(i)//datetime.now(IST).strftime("%Y-%m-%d %H:%M:%S.%f")
+        if (ecggParsed[i].fields.patientID == pIDD) {
+            //console.log(i)
+            chart.options.data[0].dataPoints.push({x: i, y: ecggParsed[i].fields.data})
+        }
+    }
+    chart.render();
+</script>
+{% block body %}
+{% endblock %}

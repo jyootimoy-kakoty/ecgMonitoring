@@ -2,6 +2,9 @@ from django.shortcuts import render
 from .models import HospitalData, PatientData, SensorData, ECGData
 from django.http import HttpResponse, Http404, StreamingHttpResponse
 import json
+from django.core import serializers
+from math import floor
+from django.http import JsonResponse
 
 #Global Variables
 sampleRate = 250
@@ -115,8 +118,6 @@ def ecgDetails(request, pID, patient):
     if not ecgDatas:
         raise Http404("Aw! It's an error.")
     else:
-        from django.core import serializers
-        from math import floor
         ecgFiltered = ecgDatas.filter(patientID = patient)
         currentSamples = floor(ecgFiltered.count() / sampleRate)
         if ecgFiltered.count() < sampleRate:
@@ -137,8 +138,10 @@ def ecgDetails(request, pID, patient):
             'samples': samples,
             'currentSamples': currentSamples
         }
-
         return render(request, 'Monitor/ecgDetails.html', context)
+    def contextTransfer():
+        return context
+
  
 def conciseTable(request, pID):
     ecgDatas = ECGData.objects.all()#.order_by('-time')[:10]
@@ -147,8 +150,6 @@ def conciseTable(request, pID):
     if not ecgDatas:
         raise Http404("Aw! It's an error.")
     else:
-        from django.core import serializers
-        from math import floor
         ecgFiltered = ecgDatas.filter(patientID = patient)
         currentSamples = floor(ecgFiltered.count() / sampleRate)
         if ecgFiltered.count() < sampleRate:
@@ -161,7 +162,6 @@ def conciseTable(request, pID):
         context = {
             'ECG': ecgFiltered.order_by('-time')[0 : (currentSamples - 1) * sampleRate],
             #'ecgDatas': ecgDatas[3500 : 3750],
-            'ecg': ecg,
             'pID': pID,
             'patient': patient,
             'patients': patients,
@@ -171,6 +171,66 @@ def conciseTable(request, pID):
         }
 
         return render(request, 'Monitor/conciseTable.html', context)
+
+def sample(request, pID):
+    ecgDatas = ECGData.objects.all()#.order_by('-time')[:10]
+    patients = PatientData.objects.all()
+    patient = PatientData.objects.filter(patientID = pID)[0]
+    if not ecgDatas:
+        raise Http404("Aw! It's an error.")
+    else:
+        ecgFiltered = ecgDatas.filter(patientID = patient)
+        currentSamples = floor(ecgFiltered.count() / sampleRate)
+        if ecgFiltered.count() < sampleRate:
+            currentSamples = 1
+        print(currentSamples, ecgFiltered.count())
+        ecg = ecgFiltered.order_by('time')[(currentSamples - 1) * sampleRate : ecgFiltered.count()]
+        sensor = ecg[0].sensorID.sensorID
+        data = []
+        for row in ecg:
+            row = {'sensorID':sensor, 'patientID': pID, 'time': row.time, 'data': row.data}
+            data.append(row)
+
+        return JsonResponse(data, safe=False)
+        """json_serializer = serializers.get_serializer("json")()
+        ecg = json_serializer.serialize(ecgFiltered.order_by('time')[(currentSamples - 1) * sampleRate : ecgFiltered.count()], ensure_ascii=False)
+        context = {
+            'ecg': ecg,
+            'pID': pID,
+            'patient': patient,
+            'patients': patients,
+            'sampleRate': sampleRate,
+            'samples': samples,
+            'currentSamples': currentSamples
+        }
+        return render(request, 'Monitor/chart.html', context)"""
+
+def chart(request, pID):
+    ecgDatas = ECGData.objects.all()#.order_by('-time')[:10]
+    patients = PatientData.objects.all()
+    patient = PatientData.objects.filter(patientID = pID)[0]
+    if not ecgDatas:
+        raise Http404("Aw! It's an error.")
+    else:
+        ecgFiltered = ecgDatas.filter(patientID = patient)
+        currentSamples = floor(ecgFiltered.count() / sampleRate)
+        if ecgFiltered.count() < sampleRate:
+            currentSamples = 1
+        print(currentSamples, ecgFiltered.count())
+        ecg = ecgFiltered.order_by('time')[(currentSamples - 1) * sampleRate : ecgFiltered.count()]
+        json_serializer = serializers.get_serializer("json")()
+        ecg = json_serializer.serialize(ecgFiltered.order_by('time')[(currentSamples - 1) * sampleRate : ecgFiltered.count()], ensure_ascii=False)
+        context = {
+            'ecg': ecg,
+            'pID': pID,
+            'patient': patient,
+            'patients': patients,
+            'sampleRate': sampleRate,
+            'samples': samples,
+            'currentSamples': currentSamples
+        }
+        return render(request, 'Monitor/chart.html', context)
+
 
 #Data Entry and Delete by POST Request Handling
 def deleteOldData():

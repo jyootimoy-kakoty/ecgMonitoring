@@ -1,22 +1,27 @@
 {% extends 'Monitor/patientDetails.html' %}
-
+{% load static %}
 {% block body %}
     <!--script src='Intro.js' type='text/javascript' ></script-->
     {% if ECG %}
-    <iframe src = "/Monitor/{{pID}}/conciseTable" id = "tableFrame" style = "height: 300px; width: 100%">
+    <div id="chartContainer" style="height: 300px; width: 100%;"></div>
+    <!--script href="/Monitor/templates/Monitor/canvasjs.min.js"></script-->
+    <!--script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script-->
+    <script rel="text/javascript" src="{% static 'js/canvasjs.js' %}"></script>
+    <!--script rel="text/javascript" src="{% static 'js/jquerycanvasjs.js' %}"></script-->
+    <!--iframe src = "/Monitor/{{pID}}/conciseTable" id = "tableFrame" style = "height: 300px; width: 100%">
 
-    </iframe>
+    </iframe-->
     <div id = "tableContainer" style = "height: 300px; width: 100%">
     <table id = "ecgTable">
         <h3><tr><th>Sample No</th><th>SensorID</th><th>PatientID</th><th>TimeStamp</th><th>ECG Data</th></tr></h3> 
         {% for ecgData in ECG %}
             {% if ecgData.patientID.patientID == pID %}
-            <tr>
+            <tr id = "row{{ forloop.revcounter }}">
                 <td>{{ forloop.revcounter }} </td><!--{{ forloop.counter0 }} # starting index 0-->
                 <td>{{ ecgData.sensorID.sensorID }} </td>
                 <td>{{ ecgData.patientID.patientID }}</td>
-                <td>{{ ecgData.time }}</td>
-                <td>{{ ecgData.data }}</td>
+                <td id = "time{{ forloop.revcounter }}">{{ ecgData.time }}</td>
+                <td id = "data{{ forloop.revcounter }}">{{ ecgData.data }}</td>
             </tr>
             {% endif %}
         {% endfor %}
@@ -28,64 +33,107 @@
     {% endif %}
 
     <script>
-        window.onload = function refreshTable() {
+        window.onload = function refreshGraphTable() {
+            var tableData = []
+            //Chart 1
+            //Create Chart
+            var createChart = function () {
+                var chart = new CanvasJS.Chart("chartContainer", {
+                    animationEnabled: true,
+                    zoomEnabled: true,
+                    theme: "light2",
+                    title:{
+                        text: "ECG Line Chart"
+                    },
+                    axisX:{      
+                        //valueFormatString: "YYYY-MM-DD HH:MM:SS" ,
+                    //labelAngle: -50
+                    },
+                    data: [{        
+                        type: "line",
+                        indexLabelFontSize: 16,
+                        //{ y: 414},
+                        // y: 520, indexLabel: "\u2191 highest",markerColor: "red", markerType: "triangle" },
+                        //{ y: 410 , indexLabel: "\u2193 lowest",markerColor: "DarkSlateGrey", markerType: "cross" },
+                        dataPoints: []// { x:10, y: 414},  { x:20, y: 144},  { x:30, y: 204},]
+                    }]
+                });
+                return chart
+            }
+            chart = createChart()
+            //Insert Initial Values
+            ecgg = "{{ ecg | escapejs }}"
+            pIDD = "{{ pID | escapejs }}"
+            samples = "{{samples | escapejs }}"
+            sampleRate = "{{ sampleRate | escapejs }}"
+            //ecg = JSON.parse(document.getElementById('data').textContent);
+            i = 0
+            ecggParsed = JSON.parse(ecgg)
+            patientParsed = '{{ ecgData.patientID.patientID }}'
+
+            for (i = 0; i < ecggParsed.length; i++) {
+                //console.log(i)//datetime.now(IST).strftime("%Y-%m-%d %H:%M:%S.%f")
+                if (ecggParsed[i].fields.patientID == pIDD) {
+                    //console.log(i)
+                    chart.options.data[0].dataPoints.push({x: i, y: ecggParsed[i].fields.data})
+                }
+            }
+            chart.render();
+            //Update Chart
+            setInterval(function () {
+                //console.log('hi');
+                //Chart 2
+                //document.getElementById("chartContainer").innerHTML = '<object type="text/html" data="/Monitor/{{pID}}/chart" style = "height: 300px; width: 100%"></object>'
+                fetch('/Monitor/{{pID}}/sample').then(function(response) {
+                    return response.json();
+                }).then(function(json) {
+                    let sample = json;
+                    //chart = createChart()
+                    console.log(sample[0].patientID, sample.length);// console.log(chart.options.data[0].dataPoints[0]);
+                    for (i = 0; i < sample.length; i++) {
+                        //console.log(i)//datetime.now(IST).strftime("%Y-%m-%d %H:%M:%S.%f")
+                        if (sample[i].patientID == pIDD) {
+                            //console.log(i)
+                            chart.options.data[0].dataPoints.shift()
+                            sample[i].data += Math.random()*100
+                            chart.options.data[0].dataPoints.push({x: i, y: sample[i].data})
+                            //chart.render();
+                        }
+                    }
+                    tableData = sample;
+                    chart.render();
+                }).catch(function(err) {
+                    console.log('Fetch problem: ' + err.message);
+                });
+            }, 1000);
+            //Update table
             setInterval(function () {
                 console.log('hi');
-                document.getElementById('tableContainer').innerHTML = '<object type="text/html" data="/Monitor/{{pID}}/conciseTable" style = "height: 300px; width: 100%"></object>'
-                var iframe = document.getElementById('tableFrame')//.contentDocument.location.reload(true);
-                iframe.src = iframe.src;
-
-                /*for (ecgData in ECG){
-                    console.log('hi-');
-                    `{% if ecgData.patientID.patientID == pID %}`
-                    console.log('hi--');
-                    row = `
-                    <tr>
-                        <td>{{ forloop.revcounter }} </td><!--{{ forloop.counter0 }} # starting index 0-->
-                        <td>{{ ecgData.sensorID.sensorID }} </td>
-                        <td>{{ ecgData.patientID.patientID }}</td>
-                        <td>{{ ecgData.time }}</td>
-                        <td>{{ ecgData.data }}</td> 
-                    </tr>`
-                    ecgTable.insertAdjacentHTML('beforeend', row);
-                `{% endif %}`
-                }*/
-                /*ecgTable = document.getElementById('ecgTable');
-                ecgTable.innerHTML = '';
-                header = `<h3><tr><th>Sample No</th><th>SensorID</th><th>PatientID</th><th>TimeStamp</th><th>ECG Data</th></tr></h3>`
-                ecgTable.insertAdjacentHTML('beforeend', header)
-
-                ecgg = "{{ ECG | escapejs }}"
-                pIDD = "{{ pID | escapejs }}"
-                console.log(ecgg);
-                ecggParsed = JSON.parse(ecgg)
-                
-                if (!ecggParsed) {
+                //Table 1
+                //document.getElementById('tableContainer').innerHTML = '<object type="text/html" data="/Monitor/{{pID}}/conciseTable" style = "height: 300px; width: 100%"></object>'
+                //Table 2
+                //var iframe = document.getElementById('tableFrame')//.contentDocument.location.reload(true);
+                //iframe.src = iframe.src;
+                //Table 3
+                if (!tableData) {
+                    ecgTable = document.getElementById('ecgTable');
+                    ecgTable.innerHTML = '';
                     ecgTable.insertAdjacentHTML('beforeend', '<h3 id = "dataRow">No data available.</h3>')
                 }
                 else {
-                    patientParsed = '{{ ecgData.patientID.patientID }}'
-                    length = ecggParsed.length
-                    for (i = 0; i < ecggParsed.length; i++) {
-                        //console.log(i)//datetime.now(IST).strftime("%Y-%m-%d %H:%M:%S.%f")
-                        if (ecggParsed[i].fields.patientID == pIDD) {
-                            //console.log(i)
-                            timeParsed = ecggParsed[i].fields.time.replace('Z', '').replace('T', ' ')
-                            const row = `
-                                <tr id = "dataRow">
-                                    <td>${length} </td>
-                                    <td>${ecggParsed[i].fields.sensorID} </td>
-                                    <td>${ecggParsed[i].fields.patientID}</td>
-                                    <td>${timeParsed}</td>
-                                    <td>${ecggParsed[i].fields.data}</td>
-                                </tr>
-                            `;
-                            ecgTable.insertAdjacentHTML('beforeend', row);
-                            length -= 1
-                        }
+                //console.log(sample[0], sample.length); console.log(chart.options.data[0].dataPoints[0]);
+                for (i = tableData.length; i > 0 ; i--) {
+                    //console.log(i)//datetime.now(IST).strftime("%Y-%m-%d %H:%M:%S.%f")
+                    if (tableData[i-1].patientID == pIDD) {
+                        //console.log(i, time)
+                        var time = document.getElementById('time' + i);
+                        var data = document.getElementById('data' + i);
+                        time.innerHTML = tableData[i-1].time;
+                        data.innerHTML = tableData[i-1].data;
                     }
-                }*/
-            }, 1100);
+                }
+                }
+            }, 1000);
         }
     </script>
 

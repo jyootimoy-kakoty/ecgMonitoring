@@ -1,0 +1,23 @@
+{% load static %}
+<script rel="text/javascript" src="{% static 'js/jquery.canvasjs.js' %}"></script>
+<!--script rel="text/javascript" src="{% static 'js/jquery.min.js' %}"></script-->
+<script>
+    var chart=$("#chartContainer").canvasJS();
+    ecgg = "{{ ecg | escapejs }}"
+    pIDD = "{{ pID | escapejs }}"
+    samples = "{{samples | escapejs }}"
+    sampleRate = "{{ sampleRate | escapejs }}"
+    //ecg = JSON.parse(document.getElementById('data').textContent);
+    i = 0
+    ecggParsed = JSON.parse(ecgg)
+    patientParsed = '{{ ecgData.patientID.patientID }}'
+    chart.options.data[0].dataPoints.remove()
+    for (i = 0; i < ecggParsed.length; i++) {
+        //console.log(i)//datetime.now(IST).strftime("%Y-%m-%d %H:%M:%S.%f")
+        if (ecggParsed[i].fields.patientID == pIDD) {
+            //console.log(i)
+            chart.options.data[0].dataPoints.push({x: i, y: ecggParsed[i].fields.data})
+        }
+    }
+    //chart.render();
+</script>
