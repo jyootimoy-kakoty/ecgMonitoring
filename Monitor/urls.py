@@ -18,6 +18,9 @@ from django.conf.urls import url
 from . import views
 
 urlpatterns = [
+    #LogIn & LogOut
+    url(r'^logIn/$', views.logInForm.as_view(), name='logInForm'),
+    url(r'^logOut/$', views.logOut, name='logOut'),
     #Index
     url(r'^$', views.Index, name='Index'),
     #Data Entry
@@ -31,6 +34,8 @@ urlpatterns = [
     url(r'^(?P<pID>P[A-Z]+[0-9]+)/conciseTable/$', views.conciseTable , name='conciseTable'),
     url(r'^(?P<pID>P[A-Z]+[0-9]+)/chart/$', views.chart , name='chart'),
     url(r'^(?P<pID>P[A-Z]+[0-9]+)/sample/$', views.sample , name='sample'),
+    url(r'^(?P<pID>P[A-Z]+[0-9]+)/sampleAll/$', views.sampleAll , name='sampleAll'),
+    url(r'^(?P<pID>P[A-Z]+[0-9]+)/completeTable$', views.completeTable , name='completeTable'),
     #POST Request for Data Entry
     url(r'^RPIPush$', views.RPIPush , name='RPIPush'),
 ]

@@ -99,7 +99,7 @@
             }
             chart.render();
             //Update Chart
-            /*setInterval(function () {
+            setInterval(function () {
                 //console.log('hi');
                 //Chart 2
                 //document.getElementById("chartContainer").innerHTML = '<object type="text/html" data="/Monitor/{{pID}}/chart" style = "height: 300px; width: 100%"></object>'
@@ -114,7 +114,7 @@
                         if (sample[i].patientID == pIDD) {
                             //console.log(i)
                             chart.options.data[0].dataPoints.shift()
-                            //sample[i].data += Math.random()*100
+                            sample[i].data += Math.random()*100
                             chart.options.data[0].dataPoints.push({x: i, y: sample[i].data})
                             //chart.render();
                         }
@@ -147,12 +147,12 @@
                         //console.log(i, time)
                         var time = document.getElementById('time' + i);
                         var data = document.getElementById('data' + i);
-                        time.innerHTML = tableData[i-1].time;
+                        time.innerHTML = new Date(tableData[i-1].time) //tableData[i-1].time.getMilliseconds();//.replace('Z', '').replace('T', ' ');
                         data.innerHTML = tableData[i-1].data;
                     }
                 }
                 }
-            }, 1000);*/
+            }, 1000);
         }
     </script>
     <style>
@@ -192,6 +192,7 @@
        #ecgTable td, #ecgTable th {
            border: 1px solid #ddd;
            padding: 8px;
+           font-size: large;
        }
        
        #ecgTable tr:nth-child(even){background-color: #f2f2f2;}
@@ -210,7 +211,8 @@
            padding-top: 12px;
            padding-bottom: 12px;
            text-align: center;
-           background-color: #4CAF50;
+           background-color: #0bc480;/*#4CAF50;*/
+           font-size:larger;
            color: white;
            position:sticky;
            top: 0;
